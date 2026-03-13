@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>In-Context Learning and Generative Models</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --panel: rgba(255,255,255,0.9);
+      --panel-strong: #0f172a;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --accent: #111827;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --maxw: 1120px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, rgba(255,255,255,0.98), var(--bg));
+      color: var(--text);
+      line-height: 1.75;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 32px 24px 96px;
+    }
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(12px);
+      background: rgba(255,255,255,0.85);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 16px 18px;
+      margin-bottom: 40px;
+    }
+    .nav-top {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .eyebrow {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.24em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .nav-title {
+      font-size: 18px;
+      font-weight: 650;
+      color: #020617;
+    }
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .pill {
+      display: inline-block;
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: white;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .pill:hover { color: #0f172a; border-color: #cbd5e1; }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 24px;
+      align-items: center;
+      scroll-margin-top: 96px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      padding: 32px;
+    }
+    .card-sm {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+    .dark {
+      background: linear-gradient(135deg, #0f172a, #334155);
+      color: #e2e8f0;
+      border-color: #1e293b;
+    }
+    .dark .muted, .dark p { color: #cbd5e1; }
+    .badge {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: #0f172a;
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(2.5rem, 5vw, 4.4rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      color: #020617;
+    }
+    h2 {
+      margin: 0 0 8px;
+      font-size: clamp(2rem, 3.2vw, 2.6rem);
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+      color: #020617;
+    }
+    h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      line-height: 1.25;
+      color: #0f172a;
+    }
+    p {
+      margin: 0;
+      color: var(--text);
+      font-size: 1rem;
+    }
+    .lead {
+      margin-top: 22px;
+      font-size: 1.125rem;
+      color: #475569;
+      max-width: 760px;
+    }
+    .muted { color: var(--muted); }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 11px 18px;
+      font-weight: 600;
+      font-size: 14px;
+      border: 1px solid transparent;
+    }
+    .btn-primary {
+      background: #0f172a;
+      color: white;
+    }
+    .btn-secondary {
+      background: white;
+      color: #334155;
+      border-color: var(--border);
+    }
+    .side-stack {
+      display: grid;
+      gap: 16px;
+    }
+    .thesis {
+      margin: 64px 0 80px;
+      padding: 30px;
+    }
+    .thesis h3 { color: white; font-size: 1.85rem; margin-bottom: 12px; }
+    .section { scroll-margin-top: 96px; margin-top: 80px; }
+    .section-head { margin-bottom: 28px; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .formula {
+      margin: 18px 0;
+      padding: 16px 18px;
+      background: rgba(255,255,255,0.88);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: #334155;
+      font-size: 14px;
+      overflow-x: auto;
+    }
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .mechanism-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .table-wrap {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    th:last-child, td:last-child { border-right: 0; }
+    tr:last-child td { border-bottom: 0; }
+    th {
+      background: #f8fafc;
+      color: #334155;
+      font-weight: 650;
+    }
+    .footer-note {
+      margin-top: 32px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 980px) {
+      .hero, .grid-2, .mini-grid, .mechanism-grid { grid-template-columns: 1fr; }
+      .container { padding-inline: 18px; }
+      .card, .card-sm { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="nav">
+      <div class="nav-top">
+        <div>
+          <div class="eyebrow">Essay-style webpage</div>
+          <div class="nav-title">In-Context Learning and Generative Models</div>
+        </div>
+        <div class="nav-links">
+          <a class="pill" href="#hero">Overview</a>
+          <a class="pill" href="#question">Core Question</a>
+          <a class="pill" href="#icl">What is ICL</a>
+          <a class="pill" href="#gen">What is Generative Modeling</a>
+          <a class="pill" href="#connection">The Connection</a>
+          <a class="pill" href="#mechanisms">Mechanisms</a>
+          <a class="pill" href="#implications">Implications</a>
+        </div>
+      </div>
+    </nav>
+
+    <section id="hero" class="hero">
+      <div class="card">
+        <div class="badge">A conceptual essay</div>
+        <h1>
+          In-context learning is not separate from generative modeling — it is one of its most interesting <span class="muted">conditional behaviors</span>
+        </h1>
+        <p class="lead">
+          This page focuses on a single theme: <strong>the connection between in-context learning (ICL) and generative models</strong>. The main claim is that a large language model learns a generative distribution over sequences, and ICL emerges when that distribution becomes rich enough to treat the prompt as a task-defining condition.
+        </p>
+        <div class="actions">
+          <a class="btn btn-primary" href="#connection">See the main connection →</a>
+          <a class="btn btn-secondary" href="#mechanisms">Mechanisms</a>
+        </div>
+      </div>
+
+      <div class="side-stack">
+        <div class="card-sm">
+          <h3>One-sentence summary</h3>
+          <p class="muted" style="margin-top:12px;">
+            A generative model learns <em>what can come next under context</em>; in-context learning is what happens when the context itself encodes a new task, rule, or hypothesis class.
+          </p>
+        </div>
+        <div class="card-sm">
+          <h3>Guiding perspective</h3>
+          <p class="muted" style="margin-top:12px;">
+            Rather than asking “why can a language model suddenly learn in context?”, it is often better to ask: “what kinds of conditional generative structure must be learned for such behavior to emerge?”
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card dark thesis">
+      <div class="eyebrow" style="color:#cbd5e1;">Thesis</div>
+      <h3>ICL can be understood as conditional generation plus implicit inference over the prompt.</h3>
+      <p>
+        The model is trained as a generative predictor, but at inference time the prompt supplies structured evidence: demonstrations, instructions, formatting conventions, or latent rules. The model then generates outputs consistent with that evidence, as if it had adapted — even though its parameters do not change.
+      </p>
+    </section>
+
+    <section id="question" class="section">
+      <div class="section-head">
+        <div class="eyebrow">Core question</div>
+        <h2>Why should these two topics be discussed together?</h2>
+      </div>
+      <div class="grid-2">
+        <div class="card-sm">
+          <h3>Standard presentation</h3>
+          <p style="margin-top:14px;" class="muted">
+            In many introductions, generative modeling is presented as the problem of learning a data distribution, while in-context learning is presented as a surprising ability of large language models to solve new tasks from examples in the prompt.
+          </p>
+          <p style="margin-top:12px;" class="muted">
+            This makes them sound like distinct phenomena: one about density estimation and sampling, the other about adaptation and reasoning.
+          </p>
+        </div>
+        <div class="card-sm">
+          <h3>Better presentation</h3>
+          <p style="margin-top:14px;">
+            A more unified view is that both concern <strong>conditional structure</strong>. A generative model learns how outputs depend on context. In ICL, the context becomes unusually informative: it may contain a task description, examples, hidden regularities, or a mini-dataset.
+          </p>
+          <p style="margin-top:12px;">
+            Under this view, ICL is not outside generative modeling. It is an especially rich regime of conditional generation.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="icl" class="section">
+      <div class="section-head">
+        <div class="eyebrow">What is ICL</div>
+        <h2>In-context learning as fast adaptation through context</h2>
+      </div>
+      <div class="grid-2">
+        <div class="card-sm">
+          <h3>Informal definition</h3>
+          <p style="margin-top:14px;" class="muted">
+            In-context learning refers to the phenomenon that a model can perform a task by reading examples or instructions in the prompt, without updating its parameters. A few input-output pairs may be enough for the model to continue with the correct mapping.
+          </p>
+          <p style="margin-top:12px;" class="muted">
+            Conceptually, the model behaves as though it first infers the task from the prompt and then solves a query under that inferred task.
+          </p>
+          <div class="formula">y ~ p<sub>θ</sub>(y | x, c)</div>
+          <p class="muted">
+            Here <strong>c</strong> denotes the context, which may include demonstrations, instructions, or exemplars. The crucial point is that the conditional distribution changes when the context changes.
+          </p>
+        </div>
+        <div class="card-sm dark">
+          <h3 style="color:white;">What makes it feel like learning?</h3>
+          <p style="margin-top:14px;">
+            It feels like learning because the model changes its behavior based on data provided at test time.
+          </p>
+          <p style="margin-top:12px;">
+            But unlike gradient-based learning, the change is implemented by attention, representation updates, and conditional generation inside one forward pass.
+          </p>
+          <p style="margin-top:12px;">
+            This is why ICL is often described as <strong>fast, implicit, in-activation adaptation</strong> rather than parameter learning.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="gen" class="section">
+      <div class="section-head">
+        <div class="eyebrow">What is generative modeling</div>
+        <h2>Generative models learn distributions by learning how to continue, complete, or refine data</h2>
+      </div>
+      <div class="card-sm">
+        <h3>Broad definition</h3>
+        <p style="margin-top:14px;" class="muted">
+          A generative model learns a probability law over data, either directly or implicitly. It can then sample new data, score candidates, or fill in missing parts under conditioning.
+        </p>
+        <p style="margin-top:12px;" class="muted">
+          In sequence models such as language models, the generative factorization is especially explicit:
+        </p>
+        <div class="formula">p(x<sub>1</sub>, ..., x<sub>T</sub>) = ∏<sub>t=1</sub><sup>T</sup> p(x<sub>t</sub> | x&lt;<sub>t</sub>)</div>
+        <p class="muted">
+          The model does not merely memorize strings. It learns which continuations are plausible given a prefix. This is already a form of structured conditional generation.
+        </p>
+      </div>
+      <div class="mini-grid" style="margin-top:16px;">
+        <div class="card-sm">
+          <h3>Autoregressive view</h3>
+          <p class="muted" style="margin-top:12px;">Generate by repeatedly predicting the next token under the current context.</p>
+        </div>
+        <div class="card-sm">
+          <h3>Latent-variable view</h3>
+          <p class="muted" style="margin-top:12px;">Generate by conditioning on hidden factors that summarize abstract causes.</p>
+        </div>
+        <div class="card-sm">
+          <h3>Refinement view</h3>
+          <p class="muted" style="margin-top:12px;">Generate by gradually transforming a simple object into a structured one.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="connection" class="section">
+      <div class="section-head">
+        <div class="eyebrow">The main connection</div>
+        <h2>ICL emerges when generative conditioning becomes powerful enough to infer a task from context</h2>
+      </div>
+      <div class="grid-2">
+        <div class="card-sm">
+          <h3>Step 1: Pretraining teaches conditional continuation</h3>
+          <p style="margin-top:14px;" class="muted">
+            During training, a language model repeatedly solves the problem: given a prefix, what is likely to come next? Over a sufficiently broad dataset, the prefixes implicitly encode facts, styles, tasks, conventions, and reasoning traces.
+          </p>
+          <p style="margin-top:12px;" class="muted">
+            So the model learns much more than surface completion. It learns how different contexts determine different continuation rules.
+          </p>
+        </div>
+        <div class="card-sm">
+          <h3>Step 2: A prompt can specify a task distribution</h3>
+          <p style="margin-top:14px;" class="muted">
+            At inference time, a prompt containing demonstrations can be interpreted as evidence about the hidden task. If the model has learned to recognize such structure, it can condition its output on the inferred task even though that task was never explicitly named.
+          </p>
+          <p style="margin-top:12px;" class="muted">
+            In this sense, the prompt works similarly to a latent variable or conditioning signal in a generative model.
+          </p>
+        </div>
+      </div>
+      <div class="card-sm dark" style="margin-top:24px;">
+        <h3 style="color:white;">The compressed statement</h3>
+        <p style="margin-top:14px;">
+          <strong>Generative modeling</strong> says: learn a distribution over outputs under conditioning.
+        </p>
+        <p style="margin-top:12px;">
+          <strong>In-context learning</strong> says: when the conditioning context contains enough task information, generation behaves like learning.
+        </p>
+        <p style="margin-top:12px;">
+          Therefore, ICL can be viewed as <strong>conditional generation where the context encodes a hypothesis about the task</strong>.
+        </p>
+      </div>
+    </section>
+
+    <section id="mechanisms" class="section">
+      <div class="section-head">
+        <div class="eyebrow">Mechanisms</div>
+        <h2>Four mechanisms behind the connection</h2>
+      </div>
+      <div class="mechanism-grid">
+        <div class="card-sm">
+          <h3>Conditioning as temporary adaptation</h3>
+          <p class="muted" style="margin-top:12px;">
+            In-context learning can be viewed as generation conditioned on a rich prompt. The prompt is not just input text; it functions like a temporary task specification that reshapes the model’s predictive distribution.
+          </p>
+        </div>
+        <div class="card-sm">
+          <h3>Prompt as latent variable carrier</h3>
+          <p class="muted" style="margin-top:12px;">
+            A generative model often conditions on a latent code, class label, or noisy state. In ICL, the prompt can play a similar role: it carries hidden information about the task, format, and desired mapping from input to output.
+          </p>
+        </div>
+        <div class="card-sm">
+          <h3>Inference without parameter update</h3>
+          <p class="muted" style="margin-top:12px;">
+            A classical learner updates parameters when data arrive. In ICL, the model instead performs a forward-pass form of inference over the prompt, using generation itself as the mechanism of adaptation.
+          </p>
+        </div>
+        <div class="card-sm">
+          <h3>Learning conditional distributions</h3>
+          <p class="muted" style="margin-top:12px;">
+            At a formal level, both ICL and generative modeling revolve around estimating conditional distributions. The difference is often which variables are treated as observed context, which are treated as latent, and how sampling is performed.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="implications" class="section">
+      <div class="section-head">
+        <div class="eyebrow">Implications</div>
+        <h2>What this viewpoint helps explain</h2>
+      </div>
+      <div class="grid-2">
+        <div class="card-sm">
+          <h3>Comparison table</h3>
+          <p class="muted" style="margin-top:10px; margin-bottom:16px;">
+            ICL and generative modeling are not identical, but they become easier to reason about under one language.
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Aspect</th>
+                  <th>In-context learning</th>
+                  <th>Generative modeling</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Training objective</strong></td>
+                  <td>Learn from next-token prediction over many contexts.</td>
+                  <td>Learn a data distribution or a structured conditional distribution.</td>
+                </tr>
+                <tr>
+                  <td><strong>Input role</strong></td>
+                  <td>The context acts like a temporary dataset or task description.</td>
+                  <td>The condition acts like guidance, side information, or partial observation.</td>
+                </tr>
+                <tr>
+                  <td><strong>Adaptation mechanism</strong></td>
+                  <td>Fast adaptation happens inside the forward pass.</td>
+                  <td>Generation adapts by conditioning and sampling from the learned distribution.</td>
+                </tr>
+                <tr>
+                  <td><strong>Main question</strong></td>
+                  <td>How does the model infer the rule from examples in context?</td>
+                  <td>How does the model represent and sample plausible data?</td>
+                </tr>
+                <tr>
+                  <td><strong>Unifying lens</strong></td>
+                  <td>Context changes the predictive distribution.</td>
+                  <td>Conditioning changes the predictive / sampling distribution.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="display:grid; gap:20px;">
+          <div class="card-sm">
+            <h3>Why prompting works at all</h3>
+            <p class="muted" style="margin-top:12px;">
+              If a model has learned a sufficiently expressive family of conditional distributions, then changing the prompt can meaningfully change behavior. Prompt engineering is therefore not an accidental hack; it is a way of steering the learned generative conditionals.
+            </p>
+          </div>
+          <div class="card-sm">
+            <h3>Why scale matters</h3>
+            <p class="muted" style="margin-top:12px;">
+              Rich in-context learning likely requires both broad pretraining coverage and enough model capacity to represent subtle relationships between context and continuation. In other words, stronger generative modeling yields more capable in-context behavior.
+            </p>
+          </div>
+          <div class="card-sm dark">
+            <h3 style="color:white;">Final takeaway</h3>
+            <p style="margin-top:12px;">
+              In-context learning is best viewed not as a separate bolt-on ability, but as a manifestation of a well-trained conditional generative model.
+            </p>
+            <p style="margin-top:12px;">
+              The prompt provides evidence; the model performs implicit inference; generation produces behavior consistent with the inferred task.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-note">This is a standalone HTML version of the essay-style webpage and can be opened directly in a browser.</div>
+    </section>
+  </div>
+</body>
+</html>
