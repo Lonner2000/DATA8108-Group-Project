@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ICL & Generative Models — Index</title>
+  <style>
+    :root {
+      --bg: #eef2f7;
+      --panel: rgba(255,255,255,0.88);
+      --panel-strong: #0f172a;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --maxw: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.95), transparent 30%),
+        radial-gradient(circle at top right, rgba(226,232,240,0.55), transparent 26%),
+        linear-gradient(180deg, #f8fafc 0%, var(--bg) 100%);
+      line-height: 1.7;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 28px 24px 84px;
+    }
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      margin-bottom: 36px;
+      padding: 16px 18px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+    }
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+    .eyebrow {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.24em;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+    .nav-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #020617;
+    }
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .pill {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--muted);
+      transition: 0.2s ease;
+      font-size: 14px;
+    }
+    .pill:hover { color: #0f172a; border-color: #cbd5e1; }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+      align-items: stretch;
+      margin-bottom: 28px;
+    }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+    .hero-main {
+      padding: 44px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #0f172a;
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 18px;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(2.4rem, 5vw, 4.8rem);
+      line-height: 1.04;
+      letter-spacing: -0.03em;
+      color: #020617;
+    }
+    .subtle { color: #64748b; }
+    .lead {
+      margin-top: 20px;
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 52rem;
+    }
+    .cta-row {
+      margin-top: 28px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-weight: 600;
+      transition: 0.2s ease;
+      border: 1px solid transparent;
+    }
+    .btn-primary {
+      background: #111827;
+      color: white;
+    }
+    .btn-primary:hover { transform: translateY(-1px); }
+    .btn-secondary {
+      border-color: var(--border);
+      background: white;
+      color: #0f172a;
+    }
+    .btn-secondary:hover { border-color: #cbd5e1; }
+
+    .hero-side {
+      display: grid;
+      gap: 16px;
+    }
+    .mini {
+      padding: 24px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.92);
+      box-shadow: var(--shadow);
+    }
+    .mini h3 {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+      color: #0f172a;
+    }
+    .mini p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin: 24px 0 34px;
+    }
+    .section {
+      margin-top: 52px;
+    }
+    .section-title {
+      margin: 0 0 16px;
+      font-size: clamp(1.9rem, 3vw, 2.9rem);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: #020617;
+    }
+    .section-desc {
+      margin: 0 0 22px;
+      color: var(--muted);
+      max-width: 54rem;
+      font-size: 17px;
+    }
+    .feature {
+      padding: 24px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.9);
+      box-shadow: var(--shadow);
+    }
+    .feature h3 {
+      margin: 0 0 10px;
+      color: #0f172a;
+      font-size: 1.05rem;
+    }
+    .feature p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .article-card {
+      padding: 28px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+      align-items: center;
+    }
+    .article-card h3 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      color: #020617;
+    }
+    .article-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+    .note-box {
+      border-radius: 22px;
+      padding: 22px;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #e2e8f0;
+    }
+    .note-box .eyebrow { color: #cbd5e1; }
+    .note-box strong { color: white; }
+
+    .footer {
+      margin-top: 52px;
+      padding: 26px;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.86);
+      color: var(--muted);
+      font-size: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    @media (max-width: 960px) {
+      .hero, .article-card { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .hero-main { padding: 30px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="nav">
+      <div class="nav-inner">
+        <div>
+          <div class="eyebrow">Landing page</div>
+          <div class="nav-title">ICL &amp; Generative Models</div>
+        </div>
+        <div class="nav-links">
+          <a class="pill" href="#overview">Overview</a>
+          <a class="pill" href="#contents">Contents</a>
+          <a class="pill" href="#article">Main Article</a>
+        </div>
+      </div>
+    </div>
+
+    <section class="hero" id="overview">
+      <div class="card hero-main">
+        <div class="badge">Index / Home</div>
+        <h1>
+          A small website on <span class="subtle">in-context learning</span> and <span class="subtle">generative models</span>
+        </h1>
+        <p class="lead">
+          This entry page serves as the front door to the essay-style webpage. The core article focuses on one central idea: <strong>in-context learning can be understood as a powerful form of conditional generation</strong>.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="icl_generative_connection.html">Open main article →</a>
+          <a class="btn btn-secondary" href="#contents">See structure</a>
+        </div>
+      </div>
+
+      <div class="hero-side">
+        <div class="mini">
+          <h3>What this site contains</h3>
+          <p>An essay-style page explaining the conceptual connection between ICL and generative modeling, with section-based navigation and polished visual layout.</p>
+        </div>
+        <div class="mini">
+          <h3>How to use it</h3>
+          <p>Open the main article to read the full explanation, or keep this page as a homepage if you want to expand the site later with more sections.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="contents">
+      <div class="eyebrow">Site structure</div>
+      <h2 class="section-title">What the main article covers</h2>
+      <p class="section-desc">
+        The article is organized as a conceptual walkthrough rather than a survey. It stays focused on the relationship between the two topics instead of branching into unrelated model families.
+      </p>
+
+      <div class="grid-3">
+        <div class="feature">
+          <h3>1. Core question</h3>
+          <p>Why should in-context learning and generative modeling be discussed together at all?</p>
+        </div>
+        <div class="feature">
+          <h3>2. ICL as adaptation</h3>
+          <p>How prompts act like temporary datasets or task specifications without changing model weights.</p>
+        </div>
+        <div class="feature">
+          <h3>3. Generative modeling</h3>
+          <p>How generative models learn conditional distributions over structured data such as text.</p>
+        </div>
+        <div class="feature">
+          <h3>4. Main connection</h3>
+          <p>Why ICL can be interpreted as conditional generation plus implicit inference over context.</p>
+        </div>
+        <div class="feature">
+          <h3>5. Mechanisms</h3>
+          <p>Several perspectives for understanding the connection, including conditioning, latent task inference, and forward-pass adaptation.</p>
+        </div>
+        <div class="feature">
+          <h3>6. Implications</h3>
+          <p>What this view explains about prompting, scaling, and the emergence of task-like behavior in language models.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="article">
+      <div class="eyebrow">Main page</div>
+      <h2 class="section-title">Open the essay page</h2>
+      <div class="card article-card">
+        <div>
+          <h3>In-Context Learning and Generative Models</h3>
+          <p>
+            The main HTML page is the actual article. It uses a long-form, sectioned layout and concentrates on the single thesis that ICL is best understood as a special regime of conditional generation.
+          </p>
+          <div class="cta-row" style="margin-top:20px;">
+            <a class="btn btn-primary" href="icl_generative_connection.html">Enter article →</a>
+          </div>
+        </div>
+        <div class="note-box">
+          <div class="eyebrow">Suggested role</div>
+          <div>
+            Use this <strong>index.html</strong> as the homepage, and use <strong>icl_generative_connection.html</strong> as the content page. This way the folder already has a simple two-page website structure.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      Files in this mini-site: <strong>index.html</strong> and <strong>icl_generative_connection.html</strong>.
+    </div>
+  </div>
+</body>
+</html>
